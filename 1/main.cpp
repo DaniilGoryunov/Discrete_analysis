@@ -142,6 +142,51 @@ void CountingSort(MyVector<Pair>& arr, uint64_t exp) {
     }
 }
 
+void CountingSortDate(MyVector<Pair>& arr, int exp, int base) {
+    MyVector<Pair> output(arr.get_size());
+    MyVector<int> count(base, 0);
+
+    for (int i = 0; i < arr.get_size(); i++) {
+        const Pair& pair = arr[i];
+        count[(pair.key / exp) % base]++;
+    }
+
+    for (int i = 1; i < base; i++) {
+        count[i] += count[i - 1];
+    }
+
+    for (int i = arr.get_size() - 1; i >= 0; i--) {
+        output[count[(arr[i].key / exp) % base] - 1].key = arr[i].key;
+        output[count[(arr[i].key / exp) % base] - 1].value = arr[i].value;
+        count[(arr[i].key / exp) % base]--;
+    }
+
+    for (size_t i = 0; i < arr.get_size(); i++) {
+        arr[i] = output[i];
+    }
+}
+
+void RadixSortDate(MyVector<Pair>& arr) {
+    uint64_t max = arr[0].key;
+
+    for (int i = 0; i < arr.get_size(); i++) {
+        const Pair& pair = arr[i];
+        if (pair.key > max) {
+            max = pair.key;
+        }
+    }
+
+    uint64_t exp = 1;
+    int base = 100; // Для сортировки по дням и месяцам
+
+    while (max / exp > 0) {
+        CountingSortDate(arr, exp, base);
+        exp *= base;
+        if (exp == 0) break;
+    }
+}
+
+
 void RadixSort(MyVector<Pair>& arr) {
     uint64_t max = arr[0].key;
 
